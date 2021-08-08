@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="comparison_and_arithematic" doc:id="bced9bfe-9a6e-45ee-9d3e-d10b7f2f54de" >
+		<ee:transform doc:name="Transform Message" doc:id="18e9cc14-7efb-4c38-afdd-d9bc510465cc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var firstnumber = 20
+var secondnumber = 30
+var firstname = "mule"
+var lastname = "esb"
+var empNameArray = ["himanshu","chinna","Mule"]
+var empObject = {
+	  "empId":1,
+	  "empName":"Himanshu",
+	  "empStatus":"A"
+	  }
+	  
+var empList = [{
+	"empID":2,
+	"empName":"Chinna",
+	"empStatus":"A"
+},
+{
+	"empID":3,
+	"empName":"Kuldeep",
+	"empStatus":"I"
+}
+]	  
+---
+[{
+	arithmaticoperations:{
+		Add:firstnumber + secondnumber,
+		Substract:secondnumber - firstnumber,
+		Multiplication:firstnumber * secondnumber,
+		Division:secondnumber / firstnumber
+	}
+},
+   comparisionoperator:{
+   	equalto:firstnumber == secondnumber,
+   	lessthan:firstnumber < secondnumber,
+   	greaterthan:firstnumber > secondnumber,
+   	notequalto:firstnumber != secondnumber,
+   	lessthanequlto:firstnumber <= secondnumber,
+   	greaterthanequalto:firstnumber >= secondnumber
+   	   
+  },
+  
+  operatorplusplus:{
+  	 fullname:firstname ++ " " ++ lastname,
+  	 empnamearray:empNameArray ++ ["mule","esb"],
+  	 emppayload:empObject ++ {"empsalary":2617265}
+  	
+  }
+]
+
+
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="pluck-flatten" doc:id="fdcbe531-2c55-411e-9c7f-24774a9304c1" >
+		<ee:transform doc:name="Transform Message" doc:id="1cf5cc91-34d0-431d-aecf-ff8ea5ca1e00" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var employee = {
+	"empID" : 123,
+	"empname" : "Chinna",
+	"empstatus" : "A"
+}
+---
+{
+	"keysOfemployee" : employee pluck $$,
+	"valueOfemployess" : employee pluck $
+		 
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="distinctBy()groupBy()joinBy()" doc:id="4df50d17-a93f-449d-a128-81a58d8a1d1b" >
+		<ee:transform doc:name="Transform Message" doc:id="36849fb0-c115-4f97-9784-c30cd6055d69" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var emplist = [
+	{
+		"empid" : 100,
+		"empname" : "Chinna",
+		"empstatus" : "A"
+		
+	},
+	{
+		"empid" : 100,
+		"empname" : "Chinna",
+		"empstatus" : "A"
+		
+	},
+	{
+		"empid" : 102,
+		"empname" : "Rohit",
+		"empstatus" : "I"
+		
+	},
+	{
+		"empid" : 101,
+		"empname" : "Ram",
+		"empstatus" : "A"
+		
+	}
+	,
+	{
+		"empid" : 105,
+		"empname" : "Shyam",
+		"empstatus" : "A"
+		
+	},
+	{
+		"empid" : 109,
+		"empname" : "Gopi",
+		"empstatus" : "A"
+		
+	}
+	,
+	{
+		"empid" : 107,
+		"empname" : "Arjun",
+		"empstatus" : "I"
+		
+	}
+]
+
+var orderedemployee =  emplist orderBy(item,index) -> item.empid
+var distinctorderedemployee = orderedemployee distinctBy(item,index) -> item
+var groupByemployee = distinctorderedemployee groupBy(item,index) -> item.empstatus
+
+---
+
+emplist orderBy $.empid distinctBy $.empid filter($.empname == "Chinna" or $.empname == "Arjun") map(item,indexOfitem) -> {
+	
+	EMPID : item.empid,
+	EMPNAME : item.empname,
+	EMPSTATUS : item.empstatus
+	
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="map-mapobject-filter-filterobject" doc:id="15ac580f-eb84-4234-b5a3-6b0455af2ef0" >
+		<ee:transform doc:name="Transform Message" doc:id="0b6b945c-db80-474c-b2a9-93955e038c92" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var emplist = [
+	{
+		"empID" : 123,
+		"empName": "Kuldeep",
+		"empStatus" : "A"
+	},
+	{
+		"empID" : 321,
+		"empName": "Amanr",
+		"empStatus" : "A"
+	},
+	{
+		"empID" : 443,
+		"empName": "Rohit",
+		"empStatus" : "A"
+	},
+	{
+		"empID" : 199,
+		"empName": "Mohit",
+		"empStatus" : "A"
+	}
+]
+---
+
+ emplist filter($.empID == 443 or $.empID == 321 or $.empID == 199) map(item,indexOfitem) -> {
+	empdetails:{
+	EMPID:item.empID,
+	EMPNAME:item.empName,
+	EMPSTATUS:item.empStatus
+	}
+	
+}
+
+
+/*
+emplist[0] mapObject(empvalue,empkey,empindex) -> {
+	
+	
+}
+*/
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sizeOf-nameOf-valuesOf-keysOf" doc:id="eb47e2c1-ca07-4aca-a034-b0b967361a20" >
+		<ee:transform doc:name="Transform Message" doc:id="f370c220-990b-446e-85cd-2b149e9aad22" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var empName = "Chinna"
+var empSkills = ["skill1","skill2"] as Array
+var employee = {
+	"empID" : 7878,
+	"empName" : "chinna",
+	"empStatus" : "A"
+}
+
+var empList = [
+	{
+		"empID" : 7878,
+	    "empName" : "chinna",
+	    "empStatus" : "A"
+},
+{
+	"empID" : 7871,
+	"empName" : "chinna2",
+	"empStatus" : "A"
+},
+{
+	"empID" : 8787,
+	"empName" : "chinna3",
+	"empStatus" : "A"
+},
+
+{
+	"empID" : 7875,
+	"empName" : "chinna4",
+	"empStatus" : "A"
+}
+]
+
+---
+{
+	"sizeOf at field level" : sizeOf(empName),
+	"sizeOf at Array level" : sizeOf(empSkills),
+	"sizeOf at object level" : sizeOf(employee),
+	"sizeOf at Array of object level" : sizeOf(empList),
+	"namesOf function" : namesOf(employee),
+	"valuesOf function" : valuesOf(employee),
+	"keysOf function" : keysOf(employee)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="data_type_coercion" doc:id="06d4c72a-9016-461c-83ea-85fbd4912228" >
+		<ee:transform doc:name="Transform Message" doc:id="35fd8d12-265b-4a9a-9a20-8ea243c3b320" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+
+var employee = {
+	empName:"Chinna",
+	empLocation:null,
+	empExperience:"3.4",
+	isActive:"true",
+	
+}
+---
+{
+	Name:employee.empName as String default null,
+	Location:employee.empLocation as String default null,
+	Experience:employee.empExperience as Number default "",
+	Active:employee.isActive as Boolean default false
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="core-math-functions" doc:id="204a440b-b616-4a7b-aaff-67b82231712c" >
+		<ee:transform doc:name="Transform Message" doc:id="70406f41-de4c-4e9e-9aa6-879cca25b8c5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"corefunction":"avg(): return of average of number",
+	"avg-num1": avg([1,1000]),
+	"avg-num2": avg([1,2,3]),
+	
+	"corefunction":"ceil(): rounds a number up to the nearest whole number",
+	"ceil-num1":ceil(1.5),
+	"ceil-num2":ceil(2.1),
+	"ceil-num3":ceil(3),
+	
+	"corefunction":"floor(): rounds a number down to the nearest whole number",
+	"floor-num1":floor(1.5),
+	"floor-num2":floor(2.1),
+	"floor-num3":floor(3),
+	
+	"corefunction":"round(): rounds a number up and down to the nearest whole number",
+	"round-num1":round(1.5),
+	"round-num2":round(2.4),
+	
+	"corefunction":"min(): return the smallest number in a array",
+	"min-num1":min([1,1000]),
+	"min-num2":min([1.7,9.7,0.01,0.001]),
+	
+	"corefunction":"minBy(): iterates over an array of object to return lowest value",
+	"num1-minBy":[{"a":1},{"a":2},{"a":3}] minBy(item) -> item.a,
+	
+	
+	"corefunction":"max(): return the biggest value in the array",
+	"num1-max":max([1,1000]),
+	
+	"corefunction":"maxBy(): iterates over an array of object to return largest value",
+	"num1-maxBy": [{"a":1},{"a":3},{"a":5},{"a":2}] maxBy(item) -> item.a
+	
+	//isEven()
+	//isOdd()
+	//isInteger()
+	//isDecimal()
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="core-string-functions" doc:id="f04b7be1-2185-4102-97b7-8fb12272e483" >
+		<ee:transform doc:name="Transform Message" doc:id="77357a11-f400-4b2a-87eb-e377d6be05bb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"contains_example" : "mulesoft" contains("mule"),
+	"find_example" : "aabcfdgasd" find("a"),
+	"is blank": isBlank("hello"),
+	"is empty example array": isEmpty([1,2,3]),
+	"is empty example strings": isEmpty("hello"),
+	"lower example": lower("MULESOFT"),
+	"upper example": upper("mulesoft"),
+	//"matches example":"me@mulesoft.com" matches("Regular expression")
+	"replace example": "admin123" replace "123" with ("id"),
+	"splitBy example": "a-b-c" splitBy("-")[0],
+	
+	
+	
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="flowcontrol-dataweavefunctions" doc:id="e4ca130b-05c1-465e-a413-ddbb24b24330" >
+		<ee:transform doc:name="Transform Message" doc:id="84bcea7d-7584-4f60-886e-8dafba64b34e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var country = "India"
+var city = "Delhi"
+---
+/*
+{
+	currency:if(country == "India") "IRS" else if(country == "USA") "USD" else "none",
+	city:if(city != null) city as String else " "
+}
+*/
+
+/*{
+	// Sample real-time use case where we are calculating where an employee is eligible for gratuity or not
+	
+    empid:payload[0].emp_id,
+    empname:payload[0].emp_name,
+    empjoindate:payload[0].emp_join_date,
+    empexperience:daysBetween(payload[0].emp_join_date as LocalDateTime {format: "yyyy-mm-dd HH:mm:ss"},now() as LocalDateTime {format: "yyyy-mm-dd HH:mm:ss"}),
+    gratuity:if((daysBetween(payload[0].emp_join_date as LocalDateTime {format: "yyyy-mm-dd HH:mm:ss"},now() as LocalDateTime {format: "yyyy-mm-dd HH:mm:ss"}))/365 > 5) "eligible" else "not eligible"
+}
+
+*/
+{
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="date_coercion" doc:id="9418e4b8-f70a-4552-a193-7c76b9063dd1" >
+		<ee:transform doc:name="Transform Message" doc:id="76926bde-07d3-468e-b40f-32426c971d18" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "today_date_timestamp":now(),
+    //Universal Date format is UTC
+    "today_date":now() as Date {format: "yyy-MMM-dd"},
+    "today_time_24":now() as Time {format: "HH:mm:ss"}, //24 hr format
+    "today_time_12":now() as Time {format: "hh:mm:ss"},  //12 hr format
+    "current_date_time_local": now() as LocalDateTime {format:"yyyy:mm:dd:HH:mm:ss"},
+    "UTC-Time":now() >> "UTC",
+    "IST-Time":now() >> "IST",
+    "GMT-Time":((now() >> "GMT") >> "IST") as DateTime {format: "yyyy-mm-dd:HH:mm:ss"},
+    "EST-Time":now() >> "EST",
+    "NewYorkTime":now() >> "America/New_York",  //time specific to New York
+    "London-Time":now() >> "Europe/Belfast"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

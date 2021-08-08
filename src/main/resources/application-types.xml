@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="eployee" format="json">
+      <types:shape format="weave" example="examples/pluck-real-time.json"><![CDATA[%dw 2.0
+
+type eployee = {|
+  emp_id: Number {"typeId": "int"}, 
+  emp_name: {|
+    firstname: String, 
+    lastname: String
+  |}, 
+  emp_email: String
+|} {"example": "{\\\"emp_id\\\":987,\\\"emp_name\\\":{\\\"firstname\\\":\\\"chinna\\\",\\\"lastname\\\":\\\"reddy\\\"},\\\"emp_email\\\":\\\"chinna@yahoo.com\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#1de994e0-60d9-40c9-a79b-f0bd208d4f3c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="eployee"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

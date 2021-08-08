@@ -1,0 +1,8 @@
+{
+  "emp_id" : 987,
+  "emp_name" : {
+       "firstname" : "chinna",
+       "lastname"  : "reddy"
+    },
+  "emp_email" : "chinna@yahoo.com"	
+}
